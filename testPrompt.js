@@ -1,18 +1,31 @@
- var prompt = require('prompt');
+var inquirer = require("inquirer");
 
-  //
-  // Start the prompt
-  //
-  prompt.start();
+inquirer.prompt([
+    {
+        type: "list",
+        name: "op",
+        message: "What do you want to do?",
+        choices: [
+            {
+                name: "Add a process to READY queue",
+                value: "PeperonniChesse"
+            },
+            {
+                name: "Add a process to READY queue",
+                value: "mumchow"
+            },
+            {
+                name: "Add a process to READY queue",
+                value: "PeperonniChesse"
+            },
+            {
+                name: "Add a process to READY queue",
+                value: "PeperonniChesse"
+            }
 
-  //
-  // Get two properties from the user: username and email
-  //
-  prompt.get(['username', 'email'], function (err, result) {
-    //
-    // Log the results.
-    //
-    console.log('Command-line input received:');
-    console.log('  username: ' + result.username);
-    console.log('  email: ' + result.email);
-  });
+            //new inquirer.Separator(),
+        ]
+    }
+], function( answers ) {
+    console.log(answers.op);
+});
