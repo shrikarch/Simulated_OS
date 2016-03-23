@@ -165,7 +165,9 @@ function showWait(){
 };
 function exitProgram(decision){
     if(decision.exit)
-        console.log('kio');
+        console.log('Alrighty. Good Bye.');
+    else
+        printPromt();
 };
 function deleteNode(decision){
     if(decision.confirmDelete){
