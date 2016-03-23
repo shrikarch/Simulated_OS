@@ -1,11 +1,21 @@
 var prompt = require('prompt');
 var inquirer = require('inquirer');
+var colors = require('colors');
 var DLL = require('doubly-linked-list');
 var readyQueue = new DLL.DoublyLinkedList();
 var waitQueue = new DLL.DoublyLinkedList();
 
+function listTraversal(listName){
+    var i = 0;
+    var qlength = listName._length;
+    var node = listName.head();
+    while(i < qlength){
+        console.log(i + "-> " + "pID: " + node.data.pid.green + " Duration: " + node.data.duration.green + " Priority: " + node.data.priority.green);
+        node = node.next;
+        i++;
+    };
+}
 function printPromt(){
-
     inquirer.prompt([
         {
             type: "list",
@@ -35,6 +45,10 @@ function printPromt(){
                 {
                     name: "Show what is in WAITING queue",
                     value: "lsWait"
+                },
+                {
+                    name: "EXIT".red,
+                    value: "true"
                 }
             ]
         },
@@ -44,7 +58,7 @@ function printPromt(){
             message: "Give this process an ID number: ",
             default: "1200",
             when: function ( answers ) {
-                return answers.op == 'adReady' ;
+                return answers.op == 'adReady' | answers.op == 'adWait' | answers.op == 'rmReady';
             }
         },
         {
@@ -53,7 +67,7 @@ function printPromt(){
             message: "How long will this process run? (ms)",
             default: "10",
             when: function ( answers ) {
-                return answers.op == 'adReady' ;
+                return answers.op == 'adReady' | answers.op == 'adWait';
             }
         },
         {
@@ -62,7 +76,7 @@ function printPromt(){
             message: "What's the priority of this process? (1-top 10-least)",
             default: "2",
             when: function ( answers ) {
-                return answers.op == 'adReady' ;
+                return answers.op == 'adReady' | answers.op == 'adWait';
             }
         },
         {
@@ -70,15 +84,7 @@ function printPromt(){
             name: "priority",
             message: "Enter the ID of the process you want to remove.",
             when: function ( answers ) {
-                answers.op == 'rmReady' ;
-            }
-        },
-        {
-            type: "input",
-            name: "priority",
-            message: "What's the priority of this process? (1-top 10-least)",
-            when: function ( answers ) {
-                return answers.op == 'rmWait' ;
+                answers.op == 'rmReady' | answers.op == 'rmWait';
             }
         }
 
@@ -86,21 +92,28 @@ function printPromt(){
         //console.log(answers);
         if(answers.op == 'adReady'){
             //callback(answers);
-            addToReady(answers); //adds the pcb to ready queue.
+            addToQueue(readyQueue, answers); //adds the pcb to ready queue.
         }else if(answers.op == 'adWait'){
             //console.log(answers.op);
-            addToWait(answers); //adds pcb to waiting queue.
+            addToQueue(waitQueue, answers); //adds pcb to waiting queue.
         }else if(answers.op == 'rmReady'){
-            console.log(answers.op);
+            removeFromQueue(readyQueue, answers.pid);
         }else if(answers.op == 'rmWait'){
             console.log(answers.op);
-
         }else if(answers.op == 'lsReady'){
-            //console.log(answers.op);
             showReady();
-
+        }else if(answers.op == 'lsWait'){
+            showWait();
         }else{
-            console.log('nin');
+            inquirer.prompt(
+                {
+                    type: "confirm",
+                    name: "exit",
+                    message: "You'll loose all the queue data.".red + "\n Are you sure you want to exit?",
+                    default: false
+                }, function( decision ) {
+                    return exitProgram(decision);
+                });
         }
 
     });
@@ -108,34 +121,58 @@ function printPromt(){
 
 };
 
-function addToReady(pcb){
-    var node = readyQueue.append(pcb);
+function addToQueue(queName, pcb){
+    var node = queName.append(pcb);
     console.log("PID: " + node.data.pid + " Duration: " + node.data.duration);
     //console.log(readyQueue._length);
     //console.log(node);
     printPromt();
 };
-function addToWait(pcb){
-    var node = waitQueue.append(pcb);
-    console.log("PID: " + node.data.pid + " Duration: " + node.data.duration);
-    //console.log(readyQueue._length);
-    printPromt();
-};
-function showReady(){
-    //console.log(readyQueue.head());
+function removeFromQueue(listName, procID){
     var i = 0;
-    var qlength = readyQueue._length;
-    var node = readyQueue.head();
-    //console.log(node.data);
+    var hitFlag = null;
+    var qlength = listName._length;
+    var node = listName.head();
     while(i < qlength){
-        console.log(node.data);
+        if(procID == node.data.pid){
+            inquirer.prompt(
+                {
+                    type: "confirm",
+                    name: "confirmDelete",
+                    message: "You are about to delete process ".red + procID + " Confirm?",
+                    default: false
+                }, function( decision ) {
+                    return deleteNode(decision);
+                });
+            hitFlag = 'set';}
         node = node.next;
         i++;
-    }
-    /*for(var node in readyQueue){
-        console.log(node);
-    }*/
+    };
+    if(hitFlag == null)
+        console.log("The queue is already empty!");
+    //======
+    //var node = readyQueue.item(1);
+    //node.remove();
+}
+
+function showReady(){
+    listTraversal(readyQueue);
     printPromt();
 };
+function showWait(){
+    listTraversal(waitQueue);
+    printPromt();
+};
+function exitProgram(decision){
+    if(decision.exit)
+        console.log('kio');
+};
+function deleteNode(decision){
+    if(decision.confirmDelete){
+
+    }
+    printPromt();
+};
+
 
 printPromt();
