@@ -55,10 +55,10 @@ function printPromt(){
         {
             type: "input",
             name: "pid",
-            message: "Give this process an ID number: ",
+            message: "What's the process ID number? ",
             default: "1200",
             when: function ( answers ) {
-                return answers.op == 'adReady' | answers.op == 'adWait' | answers.op == 'rmReady';
+                return answers.op == 'adReady' | answers.op == 'adWait' | answers.op == 'rmReady' | answers.op == 'rmWait';
             }
         },
         {
@@ -81,7 +81,7 @@ function printPromt(){
         },
         {
             type: "input",
-            name: "priority",
+            name: "rmPid",
             message: "Enter the ID of the process you want to remove.",
             when: function ( answers ) {
                 answers.op == 'rmReady' | answers.op == 'rmWait';
@@ -99,7 +99,7 @@ function printPromt(){
         }else if(answers.op == 'rmReady'){
             removeFromQueue(readyQueue, answers.pid);
         }else if(answers.op == 'rmWait'){
-            console.log(answers.op);
+            removeFromQueue(waitQueue, answers.pid);
         }else if(answers.op == 'lsReady'){
             showReady();
         }else if(answers.op == 'lsWait'){
@@ -129,27 +129,23 @@ function addToQueue(queName, pcb){
     printPromt();
 };
 function removeFromQueue(listName, procID){
+    var desVar;
     var i = 0;
     var hitFlag = null;
     var qlength = listName._length;
     var node = listName.head();
     while(i < qlength){
         if(procID == node.data.pid){
-            inquirer.prompt(
-                {
-                    type: "confirm",
-                    name: "confirmDelete",
-                    message: "You are about to delete process ".red + procID + " Confirm?",
-                    default: false
-                }, function( decision ) {
-                    return deleteNode(decision);
-                });
-            hitFlag = 'set';}
+            deleteNode(procID, node);
+            hitFlag = 'set';
+        }
         node = node.next;
         i++;
     };
-    if(hitFlag == null)
-        console.log("The queue is already empty!");
+    if(hitFlag == null){
+        console.log("No such process.");
+        printPromt();
+    }
     //======
     //var node = readyQueue.item(1);
     //node.remove();
@@ -169,10 +165,9 @@ function exitProgram(decision){
     else
         printPromt();
 };
-function deleteNode(decision){
-    if(decision.confirmDelete){
-
-    }
+function deleteNode(procID, node){
+    console.log("Deleting process: ".yellow + procID.green);
+    node.remove();
     printPromt();
 };
 
