@@ -1,3 +1,4 @@
+//importing required libraries
 var prompt = require('prompt');
 var inquirer = require('inquirer');
 var colors = require('colors');
@@ -5,16 +6,7 @@ var DLL = require('doubly-linked-list');
 var readyQueue = new DLL.DoublyLinkedList();
 var waitQueue = new DLL.DoublyLinkedList();
 
-function listTraversal(listName){
-    var i = 0;
-    var qlength = listName._length;
-    var node = listName.head();
-    while(i < qlength){
-        console.log(i + "-> " + "pID: " + node.data.pid.green + " Duration: " + node.data.duration.green + " Priority: " + node.data.priority.green);
-        node = node.next;
-        i++;
-    };
-}
+//Prints the menu and catches the user input
 function printPromt(){
     inquirer.prompt([
         {
@@ -87,7 +79,7 @@ function printPromt(){
                 answers.op == 'rmReady' | answers.op == 'rmWait';
             }
         }
-
+//conditional logic - What operation to do for which option.
     ], function( answers ) {
         //console.log(answers);
         if(answers.op == 'adReady'){
@@ -99,7 +91,7 @@ function printPromt(){
         }else if(answers.op == 'rmReady'){
             removeFromQueue(readyQueue, answers.pid);
         }else if(answers.op == 'rmWait'){
-            removeFromQueue(waitQueue, answers.pid);
+            removeFromQueue(waitQueue,answers.pid);
         }else if(answers.op == 'lsReady'){
             showReady();
         }else if(answers.op == 'lsWait'){
@@ -121,51 +113,64 @@ function printPromt(){
 
 };
 
-function addToQueue(queName, pcb){
-    var node = queName.append(pcb);
-    console.log("PID: " + node.data.pid + " Duration: " + node.data.duration);
-    //console.log(readyQueue._length);
-    //console.log(node);
-    printPromt();
-};
-function removeFromQueue(listName, procID){
-    var desVar;
+
+//FUNCTION DEFINITIONS
+function checkIfPresent(listName, procID){ //checks if node is present in the given list.
     var i = 0;
-    var hitFlag = null;
+    var hitFlag = false;
+    var pos = null;
     var qlength = listName._length;
     var node = listName.head();
     while(i < qlength){
         if(procID == node.data.pid){
-            deleteNode(procID, node);
-            hitFlag = 'set';
+            //deleteNode(procID, node);
+            pos = node;
+            hitFlag = true;
         }
         node = node.next;
         i++;
     };
-    if(hitFlag == null){
+    return {presence: hitFlag, node:pos};
+};
+function listTraversal(listName){ //traverses the list.
+    var i = 0;
+    var qlength = listName._length;
+    var node = listName.head();
+    while(i < qlength){
+        console.log(i + "-> " + "pID: " + node.data.pid.green + " Duration: " + node.data.duration.green + " Priority: " + node.data.priority.green);
+        node = node.next;
+        i++;
+    };
+};
+function addToQueue(listName, pcb){ //adds the node at the end of the queue.
+    var node = listName.append(pcb);
+    console.log("PID: " + node.data.pid + " Duration: " + node.data.duration);
+    printPromt(); //takes user back to the menu,
+};
+function removeFromQueue(listName, procID){ //deletes from the queue.
+    var present = checkIfPresent(listName, procID);
+    if(present.presence){
+        deleteNode(procID,present.node)
+    }else{
         console.log("No such process.");
         printPromt();
     }
-    //======
-    //var node = readyQueue.item(1);
-    //node.remove();
-}
-
-function showReady(){
+};
+function showReady(){ //called when user chooses to see ready queue.
     listTraversal(readyQueue);
     printPromt();
 };
-function showWait(){
+function showWait(){ //called when user selects to see waiting queue.
     listTraversal(waitQueue);
     printPromt();
 };
-function exitProgram(decision){
+function exitProgram(decision){ //exit the program
     if(decision.exit)
         console.log('Alrighty. Good Bye.');
     else
         printPromt();
 };
-function deleteNode(procID, node){
+function deleteNode(procID, node){ //deletes the node.
     console.log("Deleting process: ".yellow + procID.green);
     node.remove();
     printPromt();
