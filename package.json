@@ -5,7 +5,6 @@
   "main": "app.js",
   "dependencies": {
     "colors": "~1.1.2",
-    "doubly-linked-list": "~0.0.1",
     "prompt": "~1.0.0",
     "inquirer": "~0.12.0"
   },

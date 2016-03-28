@@ -2,7 +2,7 @@
 var prompt = require('prompt');
 var inquirer = require('inquirer');
 var colors = require('colors');
-var DLL = require('doubly-linked-list');
+var DLL = require('./doubly-linked-list');
 var readyQueue = new DLL.DoublyLinkedList();
 var waitQueue = new DLL.DoublyLinkedList();
 
