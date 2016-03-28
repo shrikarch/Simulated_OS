@@ -39,6 +39,10 @@ function printPromt(){
                     value: "lsWait"
                 },
                 {
+                    name: "Scheduling",
+                    value: "schD"
+                },
+                {
                     name: "EXIT".red,
                     value: "true"
                 }
@@ -79,7 +83,7 @@ function printPromt(){
                 answers.op == 'rmReady' | answers.op == 'rmWait';
             }
         }
-//conditional logic - What operation to do for which option.
+        //conditional logic - What operation to do for which option.
     ], function( answers ) {
         //console.log(answers);
         if(answers.op == 'adReady'){
@@ -96,6 +100,8 @@ function printPromt(){
             showReady();
         }else if(answers.op == 'lsWait'){
             showWait();
+        }else if(answers.op == 'schD'){
+            scheduler(readyQueue);
         }else{
             inquirer.prompt(
                 {
@@ -175,6 +181,23 @@ function deleteNode(procID, node){ //deletes the node.
     node.remove();
     printPromt();
 };
-
+function scheduler(listName){
+    var nodeArr = [];
+    var i = 0;
+    var qlength = listName._length;
+    var node = listName.head();
+    while(i < qlength){
+        nodeArr.push(node);
+        node = node.next;
+        i++;
+    };
+    var result = nodeArr.sort(function(a,b){
+        return a.data.duration - b.data.duration;
+    });
+    result.forEach(function(node){
+        console.log("pID: " + node.data.pid.green + " Duration: " + node.data.duration.green + " Priority: " + node.data.priority.green);
+    });
+    printPromt();
+};
 
 printPromt();
