@@ -1,31 +1,13 @@
-var inquirer = require("inquirer");
+var sortIt = require('sort-it');
 
-inquirer.prompt([
-    {
-        type: "list",
-        name: "op",
-        message: "What do you want to do?",
-        choices: [
-            {
-                name: "Add a process to READY queue",
-                value: "PeperonniChesse"
-            },
-            {
-                name: "Add a process to READY queue",
-                value: "mumchow"
-            },
-            {
-                name: "Add a process to READY queue",
-                value: "PeperonniChesse"
-            },
-            {
-                name: "Add a process to READY queue",
-                value: "PeperonniChesse"
-            }
+var arr = [
+    {firstName: 'z', lastName: 'ab'},
+    {firstName: 'a', lastName: 'cd'},
+    {firstName: 's', lastName: 'ef'},
+    {firstName: 'd', lastName: 'gh'},
+    {firstName: 'h', lastName: 'uj'}
+];
 
-            //new inquirer.Separator(),
-        ]
-    }
-], function( answers ) {
-    console.log(answers.op);
-});
+var result = sortIt(arr, 'firstName');
+
+console.log(result);
