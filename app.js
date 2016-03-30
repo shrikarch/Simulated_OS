@@ -158,7 +158,7 @@ function checkIfPresent(listName, procID){ //checks if node is present in the gi
         node = node.next;
         i++;
     };
-    return {presence: hitFlag, node:pos};
+    return {presence: hitFlag, node:pos}; //returns true or false in presence and whole node in node.
 };
 function listTraversal(listName){ //traverses the list.
     var i = 0;
@@ -171,8 +171,14 @@ function listTraversal(listName){ //traverses the list.
     };
 };
 function addToQueue(listName, pcb){ //adds the node at the end of the queue.
-    var node = listName.append(pcb);
-    console.log("PID: " + node.data.pid + " Duration: " + node.data.duration);
+    var present = checkIfPresent(readyQueue,pcb.pid)
+    var presentW = checkIfPresent(waitQueue,pcb.pid)
+    if(present.presence || presentW.presence){
+        console.log("Process already exists in one of the queues. Try another ID".red);
+    }else{
+        var node = listName.append(pcb);
+        console.log("PID: " + node.data.pid + " Duration: " + node.data.duration);
+    }
     printPromt(); //takes user back to the menu,
 };
 function removeFromQueue(listName, procID){ //deletes from the queue.
@@ -180,7 +186,7 @@ function removeFromQueue(listName, procID){ //deletes from the queue.
     if(present.presence){
         deleteNode(procID,present.node)
     }else{
-        console.log("No such process.");
+        console.log("No existing process with that ID");
         printPromt();
     }
 };
