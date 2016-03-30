@@ -39,8 +39,12 @@ function printPromt(){
                     value: "lsWait"
                 },
                 {
-                    name: "Scheduling",
+                    name: "SJF Scheduling",
                     value: "schD"
+                },
+                {
+                    name: "Priority Scheduling",
+                    value: "priD"
                 },
                 {
                     name: "EXIT".red,
@@ -102,6 +106,8 @@ function printPromt(){
             showWait();
         }else if(answers.op == 'schD'){
             scheduler(readyQueue);
+        }else if(answers.op == 'priD'){
+            priScheduler(readyQueue);
         }else{
             inquirer.prompt(
                 {
@@ -184,6 +190,8 @@ function deleteNode(procID, node){ //deletes the node.
 function scheduler(listName){
     var nodeArr = [];
     var i = 0;
+    var waitTime = 0;
+    var lastTime;
     var qlength = listName._length;
     var node = listName.head();
     while(i < qlength){
@@ -195,9 +203,42 @@ function scheduler(listName){
         return a.data.duration - b.data.duration;
     });
     result.forEach(function(node){
-        console.log("pID: " + node.data.pid.green + " Duration: " + node.data.duration.green + " Priority: " + node.data.priority.green);
+        console.log("pID: " + node.data.pid.green + " Duration: " + node.data.duration.green + " Priority: " + node.data.priority.green+"\n");
     });
+    result.forEach(function(node){
+        console.log("Waiting time for process "+node.data.pid.green+" is "+waitTime);
+        waitTime = waitTime + parseInt(node.data.duration);
+        lastTime = node.data.duration;
+    });
+    console.log("Average wait time is "+ ((waitTime - lastTime)/nodeArr.length));
     printPromt();
 };
+function priScheduler(listName){
+    var nodeArr = [];
+    var i = 0;
+    var waitTime = 0;
+    var lastTime;
+    var qlength = listName._length;
+    var node = listName.head();
+    while(i < qlength){
+        nodeArr.push(node);
+        node = node.next;
+        i++;
+    };
+    var result = nodeArr.sort(function(a,b){
+        return a.data.priority - b.data.priority;
+    });
+    result.forEach(function(node){
+        console.log("pID: " + node.data.pid.green + " Duration: " + node.data.duration.green + " Priority: " + node.data.priority.green+"\n");
+    });
+    result.forEach(function(node){
+        console.log("Waiting time for process "+node.data.pid.green+" is "+waitTime);
+        waitTime = waitTime + parseInt(node.data.duration);
+        lastTime = node.data.duration;
+    });
+    console.log("Average wait time is "+ ((waitTime - lastTime)/nodeArr.length));
+    printPromt();
+};
+
 
 printPromt();
