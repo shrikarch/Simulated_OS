@@ -47,6 +47,10 @@ function printPromt(){
                     value: "priD"
                 },
                 {
+                    name: "Round Robin Scheduling",
+                    value: "roundR"
+                },
+                {
                     name: "EXIT".red,
                     value: "true"
                 }
@@ -64,8 +68,8 @@ function printPromt(){
         {
             type: "input",
             name: "duration",
-            message: "How long will this process run? (ms)",
-            default: "10",
+            message: "How long will this process run?(ms)",
+            default: "3",
             when: function ( answers ) {
                 return answers.op == 'adReady' | answers.op == 'adWait';
             }
@@ -73,7 +77,7 @@ function printPromt(){
         {
             type: "input",
             name: "priority",
-            message: "What's the priority of this process? (1-top 10-least)",
+            message: "What's the priority of this process? (1-top 4-least)",
             default: "2",
             when: function ( answers ) {
                 return answers.op == 'adReady' | answers.op == 'adWait';
@@ -82,11 +86,21 @@ function printPromt(){
         {
             type: "input",
             name: "rmPid",
-            message: "Enter the ID of the process you want to remove.",
+            message: "Enter the ID of the process you want to remove",
             when: function ( answers ) {
                 answers.op == 'rmReady' | answers.op == 'rmWait';
             }
+        },
+        {
+            type: "input",
+            name: "timeQ",
+            message: "How big will be the time quantum?(ms)",
+            default: "3",
+            when: function ( answers ) {
+                return answers.op == 'roundR';
+            }
         }
+
         //conditional logic - What operation to do for which option.
     ], function( answers ) {
         //console.log(answers);
@@ -108,6 +122,8 @@ function printPromt(){
             scheduler(readyQueue);
         }else if(answers.op == 'priD'){
             priScheduler(readyQueue);
+        }else if(answers.op == 'roundR'){
+            roundRobin(readyQueue,answers.timeQ);
         }else{
             inquirer.prompt(
                 {
@@ -237,6 +253,53 @@ function priScheduler(listName){
         lastTime = node.data.duration;
     });
     console.log("Average wait time is "+ ((waitTime - lastTime)/nodeArr.length));
+    printPromt();
+};
+function roundRobin(listName,timeQ){
+    var i = 0;
+    var stack = [];
+    var qlength = listName._length;
+    var node = listName.head();
+    while(i < qlength){
+        node.data.td = parseInt(node.data.duration);
+        if(node.data.td > timeQ){
+            node.data.td = node.data.td - timeQ;
+            stack.push(true);
+            node.data.complete = false;
+        }else{
+            node.data.complete = true;
+        }
+        console.log("Process number: "+node.data.pid.green+" Duration: "+node.data.duration.green+" is it complete? "+node.data.complete);
+        //console.log(stack);
+        node = node.next;
+        i++;
+    };
+    var ite = 1;
+    while(stack.length != 0){
+        //console.log(stack);
+        var j = 0;
+        var node = listName.head();
+        console.log("\nNew Iteration: ".cyan + ite)
+        while(j<qlength){
+            if(node.data.complete === false){
+                if(node.data.td > timeQ){
+                    node.data.td = node.data.td - timeQ;
+                    //stack.push(true);
+                    node.data.complete = false;
+                    //console.log("addedto stack. Current stack- ".yellow+stack);
+                    console.log("for process "+node.data.pid.green+" rem time: "+colors.green(node.data.td));
+                }else{
+                    node.data.complete = true;
+                    stack.splice(0,1);
+                    //console.log("removing from stack. current stack- ".yellow+stack);
+                    console.log("Process "+node.data.pid.green+" completed execution");
+                }
+            }
+            node = node.next;
+            j++;
+        }
+        ite++;
+    }
     printPromt();
 };
 
