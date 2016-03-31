@@ -1,5 +1,4 @@
 //importing required libraries
-var prompt = require('prompt');
 var inquirer = require('inquirer');
 var colors = require('colors');
 var DLL = require('./doubly-linked-list');
@@ -115,9 +114,9 @@ function printPromt(){
         }else if(answers.op == 'rmWait'){
             removeFromQueue(waitQueue,answers.pid);
         }else if(answers.op == 'lsReady'){
-            showReady();
+            showQueue(readyQueue);
         }else if(answers.op == 'lsWait'){
-            showWait();
+            showQueue(waitQueue);
         }else if(answers.op == 'schD'){
             scheduler(readyQueue);
         }else if(answers.op == 'priD'){
@@ -190,12 +189,8 @@ function removeFromQueue(listName, procID){ //deletes from the queue.
         printPromt();
     }
 };
-function showReady(){ //called when user chooses to see ready queue.
-    listTraversal(readyQueue);
-    printPromt();
-};
-function showWait(){ //called when user selects to see waiting queue.
-    listTraversal(waitQueue);
+function showQueue(listName){ //called when user chooses to see any queue.
+    listTraversal(listName);
     printPromt();
 };
 function exitProgram(decision){ //exit the program
