@@ -259,6 +259,8 @@ function priScheduler(listName){
 function roundRobin(listName,timeQ){
     var i = 0;
     var stack = [];
+    var lastTime;
+    var waitTime = 0;
     var qlength = listName._length;
     var node = listName.head();
     while(i < qlength){
@@ -301,6 +303,16 @@ function roundRobin(listName,timeQ){
         }
         ite++;
     }
+    var k =0;
+    var node = listName.head();
+    while(k < qlength){
+        console.log("Waiting time for process "+node.data.pid.green+" is "+waitTime);
+        waitTime = waitTime + parseInt(node.data.duration);
+        node = node.next;
+        k++;
+    };
+    var avgwait = waitTime / qlength;
+    console.log("Average waiting time is "+avgwait);
     printPromt();
 };
 
