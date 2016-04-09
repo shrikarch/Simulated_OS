@@ -159,27 +159,30 @@ function checkIfPresent(listName, procID){ //checks if node is present in the gi
     };
     return {presence: hitFlag, node:pos}; //returns true or false in presence and whole node in node.
 };
+
 function listTraversal(listName){ //traverses the list.
     var i = 0;
     var qlength = listName._length;
     var node = listName.head();
     while(i < qlength){
         console.log(i + "-> " + "pID: " + node.data.pid.green + " Duration: " + node.data.duration.green + " Priority: " + node.data.priority.green);
-        node = node.next;
+        node = node.next; //switch to next node
         i++;
     };
 };
+
 function addToQueue(listName, pcb){ //adds the node at the end of the queue.
     var present = checkIfPresent(readyQueue,pcb.pid)
     var presentW = checkIfPresent(waitQueue,pcb.pid)
     if(present.presence || presentW.presence){
         console.log("Process already exists in one of the queues. Try another ID".red);
     }else{
-        var node = listName.append(pcb);
+        var node = listName.append(pcb); //add to the DLL
         console.log("PID: " + node.data.pid + " Duration: " + node.data.duration);
     }
     printPromt(); //takes user back to the menu,
 };
+
 function removeFromQueue(listName, procID){ //deletes from the queue.
     var present = checkIfPresent(listName, procID);
     if(present.presence){
@@ -193,18 +196,20 @@ function showQueue(listName){ //called when user chooses to see any queue.
     listTraversal(listName);
     printPromt();
 };
+
+function deleteNode(procID, node){ //deletes the node.
+    console.log("Deleting process: ".yellow + procID.green);
+    node.remove(); //delete node from DLL
+    printPromt();
+};
+
 function exitProgram(decision){ //exit the program
     if(decision.exit)
         console.log('Alrighty. Good Bye.');
     else
         printPromt();
 };
-function deleteNode(procID, node){ //deletes the node.
-    console.log("Deleting process: ".yellow + procID.green);
-    node.remove();
-    printPromt();
-};
-function scheduler(listName){
+function scheduler(listName){//code for sjf scheduler
     var nodeArr = [];
     var i = 0;
     var waitTime = 0;
@@ -230,7 +235,7 @@ function scheduler(listName){
     console.log("Average wait time is "+ ((waitTime - lastTime)/nodeArr.length));
     printPromt();
 };
-function priScheduler(listName){
+function priScheduler(listName){ //Code for priority scheduler
     var nodeArr = [];
     var i = 0;
     var waitTime = 0;
@@ -256,9 +261,9 @@ function priScheduler(listName){
     console.log("Average wait time is "+ ((waitTime - lastTime)/nodeArr.length));
     printPromt();
 };
-function roundRobin(listName,timeQ){
+function roundRobin(listName,timeQ){ //roundrobin starts
     var i = 0;
-    var stack = [];
+    var stack = []; //init stack
     var lastTime;
     var waitTime = 0;
     var qlength = listName._length;
@@ -267,7 +272,7 @@ function roundRobin(listName,timeQ){
         node.data.td = parseInt(node.data.duration);
         if(node.data.td > timeQ){
             node.data.td = node.data.td - timeQ;
-            stack.push(true);
+            stack.push(true); //push on the stack
             node.data.complete = false;
         }else{
             node.data.complete = true;
@@ -279,7 +284,6 @@ function roundRobin(listName,timeQ){
     };
     var ite = 1;
     while(stack.length != 0){
-        //console.log(stack);
         var j = 0;
         var node = listName.head();
         console.log("\nNew Iteration: ".cyan + ite)
@@ -287,14 +291,11 @@ function roundRobin(listName,timeQ){
             if(node.data.complete === false){
                 if(node.data.td > timeQ){
                     node.data.td = node.data.td - timeQ;
-                    //stack.push(true);
                     node.data.complete = false;
-                    //console.log("addedto stack. Current stack- ".yellow+stack);
                     console.log("for process "+node.data.pid.green+" rem time: "+colors.green(node.data.td));
                 }else{
                     node.data.complete = true;
-                    stack.splice(0,1);
-                    //console.log("removing from stack. current stack- ".yellow+stack);
+                    stack.splice(0,1); //pop from the stack
                     console.log("Process "+node.data.pid.green+" completed execution");
                 }
             }
@@ -314,7 +315,7 @@ function roundRobin(listName,timeQ){
     var avgwait = waitTime / qlength;
     console.log("Average waiting time is "+avgwait);
     printPromt();
-};
+}; //roundrobin ends
 
 
 printPromt();
